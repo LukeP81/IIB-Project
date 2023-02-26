@@ -1,24 +1,26 @@
+"""Module for implementing an orthogonal squared exponential kernel"""
+
+from typing import Optional
+
 import gpflow
 import numpy as np
 import tensorflow as tf
-from typing import Optional
 
 
-class OrthogonalRBFKernel(gpflow.kernels.Kernel):
+class OrthogonalSEKernel(gpflow.kernels.Kernel):  # pylint-disable=abstract-method
     """
+    Class for implementing the constrained squared exponential kernel
     :param active_dims: active dimension
-    :return: constrained BRF kernel
+    :return: constrained SE kernel
     """
 
-    def __init__(
-            self, active_dims=None
-    ):
+    def __init__(self, active_dims=None):
         super().__init__(active_dims=active_dims)
         self.base_kernel = gpflow.kernels.SquaredExponential()
         self.active_dims = self.active_dims
         self.measure_var = 1
 
-        def cov_X_s(X):
+        def covariance(X):
             tf.debugging.assert_shapes([(X, (..., "N", 1))])
             length = self.base_kernel.lengthscales
             sigma2 = self.base_kernel.variance
@@ -30,13 +32,13 @@ class OrthogonalRBFKernel(gpflow.kernels.Kernel):
                     * tf.exp(-0.5 * ((X - mu) ** 2) / (length ** 2 + var))
             )
 
-        def var_s():
+        def variance():
             length = self.base_kernel.lengthscales
             sigma2 = self.base_kernel.variance
             return sigma2 * length / tf.sqrt(length ** 2 + 2 * 1)
 
-        self.cov_X_s = cov_X_s
-        self.var_s = var_s
+        self.covariance = covariance
+        self.variance = variance
 
     def K(self, X: np.ndarray, X2: Optional[np.ndarray] = None) -> np.ndarray:
         """
@@ -44,18 +46,19 @@ class OrthogonalRBFKernel(gpflow.kernels.Kernel):
         :param X2: input array X2, if None, set to X
         :return: kernel matrix K(X,X2)
         """
-        cov_X_s = self.cov_X_s(X)
-        if X2 is None:
-            cov_X2_s = cov_X_s
-        else:
-            cov_X2_s = self.cov_X_s(X2)
-        k = (
-                self.base_kernel(X, X2)
-                - tf.tensordot(cov_X_s, tf.transpose(cov_X2_s), 1) / self.var_s()
-        )
-        return k
+        covariance_x = self.covariance(X)
+        covariance_x2 = covariance_x if X2 is None else self.covariance(X2)
+
+        to_subtract = tf.tensordot(
+            covariance_x,
+            tf.transpose(covariance_x2),
+            axes=1
+        ) / self.variance()
+
+        return self.base_kernel(X, X2) - to_subtract
 
     def K_diag(self, X):
-        cov_X_s = self.cov_X_s(X)
-        k = self.base_kernel.K_diag(X) - tf.square(cov_X_s[:, 0]) / self.var_s()
+        covariance = self.covariance(X)
+        k = self.base_kernel.K_diag(X) - tf.square(covariance[:, 0]
+                                                   ) / self.variance()
         return k

@@ -6,8 +6,8 @@ from scipy.io import loadmat
 
 import gpflow
 
-from backend.kernels.additive_kernel import AdditiveKernel
-from backend.kernels.orthogonal_kernel import OrthogonalRBFKernel
+from backend.kernels.additive_kernel import OAK
+from backend.kernels.orthogonal_kernel import OrthogonalSEKernel
 
 def cw1a():
     matfile = loadmat(file_name="data/cw1a")
@@ -16,7 +16,7 @@ def cw1a():
     plt.show()
     model = gpflow.models.GPR(
         (X, Y),
-        kernel=AdditiveKernel(num_dims=1)
+        kernel=OAK(num_dims=1)
     )
     opt = gpflow.optimizers.Scipy()
     opt.minimize(model.training_loss, model.trainable_variables)
@@ -67,7 +67,7 @@ def cw1e():
     # fmt: on
     # hide: end
     model = gpflow.models.GPR(
-        (X, Y), kernel=AdditiveKernel(num_dims=4)
+        (X, Y), kernel=OAK(num_dims=4)
     )
     opt = gpflow.optimizers.Scipy()
 
