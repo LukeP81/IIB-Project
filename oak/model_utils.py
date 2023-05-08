@@ -4,7 +4,7 @@
 
 """Model Utilities"""
 
-# pylint: disable = line-too-long, invalid-name
+# pylint: disable = line-too-long, invalid-name, too-many-arguments, too-many-locals, too-many-instance-attributes
 
 import os
 import time
@@ -83,12 +83,12 @@ def load_model(
     model_params = np.load(str(filename), allow_pickle=True)["hyperparams"]
 
     if load_all_parameters:
-        for i in range(len(model.parameters)):
-            model.parameters[i].assign(model_params[i])
+        for i, parameter in enumerate(model.parameters):
+            parameter.assign(model_params[i])
     else:
-        for i in range(len(model.trainable_parameters)):
-            print(model_params[i], model.trainable_parameters[i])
-            model.trainable_parameters[i].assign(model_params[i])
+        for i, parameter in enumerate(model.trainable_parameters):
+            print(model_params[i], parameter)
+            parameter.assign(model_params[i])
 
 
 def create_model_oak(

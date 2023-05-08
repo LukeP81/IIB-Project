@@ -5,3 +5,5 @@ scipy==1.10.1
 tensorflow<2.11 #windows GPU compatability
 scikit-learn==1.2.2
 pytest==7.3.1
+tikzplotlib==0.10.1
+streamlit==1.18.1
