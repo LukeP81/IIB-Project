@@ -7,7 +7,8 @@ import numpy as np
 import tensorflow as tf
 
 
-class OrthogonalSEKernel(gpflow.kernels.Kernel):  # pylint-disable=abstract-method
+# pylint-disable=abstract-method
+class OrthogonalSEKernel(gpflow.kernels.Kernel):
     """
     Class for implementing the constrained squared exponential kernel
     :param active_dims: active dimension
@@ -20,16 +21,16 @@ class OrthogonalSEKernel(gpflow.kernels.Kernel):  # pylint-disable=abstract-meth
         self.active_dims = self.active_dims
         self.measure_var = 1
 
-        def covariance(X):
-            tf.debugging.assert_shapes([(X, (..., "N", 1))])
+        def covariance(x):
+            tf.debugging.assert_shapes([(x, (..., "N", 1))])
             length = self.base_kernel.lengthscales
             sigma2 = self.base_kernel.variance
-            mu, var = 0, 1
+            mean, var = 0, 1
             return (
                     sigma2
                     * length
                     / tf.sqrt(length ** 2 + var)
-                    * tf.exp(-0.5 * ((X - mu) ** 2) / (length ** 2 + var))
+                    * tf.exp(-0.5 * ((x - mean) ** 2) / (length ** 2 + var))
             )
 
         def variance():

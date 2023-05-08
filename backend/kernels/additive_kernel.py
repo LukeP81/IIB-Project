@@ -8,7 +8,8 @@ from backend.kernels.additive_terms import NewtonGirard
 from backend.kernels.orthogonal_kernel import OrthogonalSEKernel
 
 
-class OAK(gpflow.kernels.Kernel):  # pylint-disable=abstract-method
+# pylint-disable=abstract-method
+class OAK(gpflow.kernels.Kernel):
     """
     Class for implementing the orthogonal additive kernel
     :param num_dims: the number of dimensions of the input data

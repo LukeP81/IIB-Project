@@ -30,9 +30,9 @@ class PlotGP:
         order_variance = model.kernel.order_variance[1]
 
         if plot_range is None:
-            x_min, x_max = (np.min(x_data[:, dimension]),
-                            np.max(x_data[:, dimension]))
-            plot_range = np.linspace(x_min, x_max, granularity)
+            plot_range = np.linspace(start=np.min(x_data[:, dimension]),
+                                     stop=np.max(x_data[:, dimension]),
+                                     num=granularity)
 
         kxx = (
                 base_kernel.K(plot_range[:, None],
@@ -82,25 +82,25 @@ class PlotGP:
         y_plot_data = x_data[:, y_dim].numpy()
 
         if x_plot_range is None:
-            x_min, x_max = x_plot_data.min(), x_plot_data.max()
-            x_plot_range = np.linspace(start=x_min, stop=x_max,
+            x_plot_range = np.linspace(start=x_plot_data.min(),
+                                       stop=x_plot_data.max(),
                                        num=101)
         if y_plot_range is None:
-            y_min, y_max = y_plot_data.min(), y_plot_data.max()
-            y_plot_range = np.linspace(start=y_min, stop=y_max,
+            y_plot_range = np.linspace(start=y_plot_data.min(),
+                                       stop=y_plot_data.max(),
                                        num=101)
 
         x_mesh, y_mesh = np.meshgrid(x_plot_range, y_plot_range)
-        xx = np.vstack([x_mesh.flatten(), y_mesh.flatten()]).T
+        stacked = np.vstack([x_mesh.flatten(), y_mesh.flatten()]).T
 
         k = model.kernel(model.data[0])
         k_tilde = k + np.eye(model.data[0].shape[0]) * model.likelihood.variance
         chol = np.linalg.cholesky(k_tilde)
-        alpha = tf.linalg.cholesky_solve(chol, model.data[1])
-        kxx = order_variance * x_base_kernel.K(xx[:, 0:1],
+        alpha = tf.linalg.cholesky_solve(chol, y_data)
+        kxx = order_variance * x_base_kernel.K(stacked[:, 0:1],
                                                x_data[:, x_dim: x_dim + 1])
-        kxx *= y_base_kernel.K(xx[:, 1:2],
+        kxx *= y_base_kernel.K(stacked[:, 1:2],
                                x_data[:, y_dim: y_dim + 1])
-        mu = np.dot(kxx, alpha)
+        mean = np.dot(kxx, alpha)
 
-        return x_plot_range, y_plot_range, mu.reshape(*x_mesh.shape)
+        return x_plot_range, y_plot_range, mean.reshape(*x_mesh.shape)

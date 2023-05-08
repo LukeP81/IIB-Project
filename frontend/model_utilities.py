@@ -12,7 +12,7 @@ class ModelUtilities:
     def check_optimised(cls):
         """Method for checking whether optimised model parameters are stored"""
         model_attributes = st.session_state.get("model_attributes", None)
-        return False if model_attributes is None else True
+        return model_attributes is not None
 
     @classmethod
     def load_model(cls):

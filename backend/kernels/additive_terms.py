@@ -23,7 +23,7 @@ class NewtonGirard:  # pylint:disable=too-few-public-methods
         """
 
         orders = [base_kernels]
-        for p in range(1, num_dims):
+        for _ in range(1, num_dims):
             orders.append([tf.multiply(orders[-1][k], orders[0][k])
                            for k in range(num_dims)])
         return [reduce(tf.add, order) for order in orders]
@@ -43,14 +43,12 @@ class NewtonGirard:  # pylint:disable=too-few-public-methods
         """
 
         e_term = [tf.ones_like(base_kernels[0])]  # start with constant term
-        for n in range(1, num_dims + 1):
+        for order in range(1, num_dims + 1):
             e_term.append(
-                (1.0 / n)
-                * reduce(
-                    tf.add,
-                    [((-1) ** (k - 1)) * e_term[n - k] * s_terms[k - 1] for k in
-                     range(1, n + 1)],
-                )
+                (1.0 / order)
+                * reduce(tf.add,
+                         [((-1) ** (k - 1)) * e_term[order - k] * s_terms[k - 1]
+                          for k in range(1, order + 1)], )
             )
         return e_term
 
