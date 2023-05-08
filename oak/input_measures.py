@@ -14,6 +14,7 @@ import tensorflow as tf
 
 
 class Measure:
+    """Base measure class"""
     pass
 
 

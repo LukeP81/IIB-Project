@@ -2,6 +2,10 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+"""Model Utilities"""
+
+# pylint: disable = line-too-long
+
 import os
 import time
 from pathlib import Path
@@ -218,7 +222,7 @@ class oak_model:
         :param sparse: Boolean to indicate whether to use sparse GP with inducing points. Defaults to False.
         :param use_normalising_flow: whether to use normalising flow, if not, continuous features are standardised
         :param share_var_across_orders: whether to share the same variance across orders,
-           if False, it uses kernel of the form \prod_i(1+k_i) in Duvenaud (2011).
+           if False, it uses kernel of the form /prod_i(1+k_i) in Duvenaud (2011).
         :return: OAK model class with model fitting, prediction, attribution and plotting utils.
         """
         self.max_interaction_depth = max_interaction_depth
