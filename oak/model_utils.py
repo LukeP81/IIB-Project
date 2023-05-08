@@ -4,12 +4,14 @@
 
 """Model Utilities"""
 
-# pylint: disable = line-too-long, invalid-name, too-many-arguments, too-many-locals, too-many-instance-attributes
+# pylint: disable = line-too-long, invalid-name, too-many-arguments,
+# too-many-locals, too-many-instance-attributes, too-many-branches,
+# too-many-statements
 
 import os
 import time
 from pathlib import Path
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Union, Any
 import gpflow
 import numpy as np
 import tensorflow as tf
@@ -165,8 +167,8 @@ def create_model_oak(
     if use_sparsity_prior:
         print("Using sparsity prior")
         if share_var_across_orders:
-            for p in model.kernel.variances:
-                p.prior = tfd.Gamma(f64(1.0), f64(0.2))
+            for mkv in model.kernel.variances:
+                mkv.prior = tfd.Gamma(f64(1.0), f64(0.2))
     # Initialise likelihood variance to small value to avoid finding all-noise explanation minima
     model.likelihood.variance.assign(0.01)
     if optimise:
@@ -196,11 +198,13 @@ def apply_normalise_flow(X: tf.Tensor, input_flows: List[Normalizer]) -> tf.Tens
 
 
 class oak_model:
+    """OAK model"""
+
     def __init__(
         self,
         max_interaction_depth=2,
         num_inducing=200,
-        lengthscale_bounds=[1e-3, 1e3],
+        lengthscale_bounds: Any = None,
         binary_feature: Optional[List[int]] = None,
         categorical_feature: Optional[List[int]] = None,
         empirical_measure: Optional[List[int]] = None,
@@ -227,7 +231,10 @@ class oak_model:
         """
         self.max_interaction_depth = max_interaction_depth
         self.num_inducing = num_inducing
-        self.lengthscale_bounds = lengthscale_bounds
+        if lengthscale_bounds is None:
+            self.lengthscale_bounds = [1e-3, 1e3]
+        else:
+            self.lengthscale_bounds = lengthscale_bounds
         self.binary_feature = binary_feature
         self.categorical_feature = categorical_feature
         self.use_sparsity_prior = use_sparsity_prior
