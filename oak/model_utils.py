@@ -4,7 +4,7 @@
 
 """Model Utilities"""
 
-# pylint: disable = line-too-long
+# pylint: disable = line-too-long, invalid-name
 
 import os
 import time
