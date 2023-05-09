@@ -6,7 +6,7 @@
 Model Utilities
 """
 
-# pylint: disable = line-too-long, invalid-name, too-many-arguments, too-many-locals, too-many-instance-attributes, too-many-branches, too-many-statements
+# pylint: disable = line-too-long, invalid-name, too-many-arguments, too-many-locals, too-many-instance-attributes, too-many-branches, too-many-statements, attribute-defined-outside-init
 
 import os
 import time
@@ -441,7 +441,7 @@ class oak_model:
         gpflow.utilities.print_summary(self.m, fmt="notebook")
         print(f"Training took {time.time() - t_start:.1f} seconds.")
 
-    def predict(self, X: tf.Tensor, clip=False) -> tf.Tensor:
+    def predict(self, X: tf.Tensor, clip=False) -> Optional[tf.Tensor]:
         """
         :param X: inputs to predict the response on
         :param clip: whether to slip X between x_min and x_max along each dimension
@@ -456,6 +456,7 @@ class oak_model:
             return self.scaler_y.inverse_transform(y_pred)[:, 0]
         except ValueError:
             print("test X is outside the range of training input, try clipping X.")
+        return None
 
     def get_loglik(self, X: tf.Tensor, y: tf.Tensor, clip=False) -> tf.Tensor:
         """
@@ -504,7 +505,7 @@ class oak_model:
             mean_i, std_i = self.scaler_X_empirical.mean_[continuous_i], np.sqrt(
                 self.scaler_X_empirical.var_[continuous_i]
             )
-            transformer_x = lambda x: x * std_i + mean_i
+            transformer_x = lambda x: x * std_i + mean_i #pylint: disable = unnecessary lambda expression
         elif self.gmm_measure is not None and i in self.gmm_measure:
             transformer_x = None
         else:
@@ -522,7 +523,7 @@ class oak_model:
         mu = 0
         selected_dims, _ = get_list_representation(self.m.kernel, num_dims=num_dims)
         tuple_of_indices = selected_dims[1:]
-        model_indices, sobols = compute_sobol_oak(
+        _, sobols = compute_sobol_oak(
             self.m,
             delta,
             mu,
@@ -550,7 +551,7 @@ class oak_model:
         tikz_path: Optional[str] = None,
         ylim: Optional[List[float]] = None,
         quantile_range: Optional[List[float]] = None,
-        log_axis: Optional[List[bool]] = [False, False],
+        log_axis: Optional[List[bool]] = None,
         grid_range: Optional[List[np.ndarray]] = None,
         log_bin: Optional[List[bool]] = None,
         num_bin: Optional[int] = 100,
@@ -572,7 +573,7 @@ class oak_model:
         :return: plotting of individual effects
         """
         if X_columns is None:
-            X_columns = ["feature %d" % i for i in range(self.num_dims)]
+            X_columns = [f"feature {i}" for i in range(self.num_dims)]
 
         if X_lists is None:
             X_lists = [None for i in range(len(X_columns))]
@@ -586,6 +587,8 @@ class oak_model:
         if quantile_range is None:
             quantile_range = [None for i in range(len(X_columns))]
 
+        if log_axis is None:
+            log_axis = [False, False]
         if log_bin is None:
             log_bin = [False for i in range(len(X_columns))]
 
