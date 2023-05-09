@@ -22,10 +22,10 @@ jobs:
     - name: Lint with flake8
       run: |
         # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --show-source --statistics --max-line-length 82 --exclude ./oak/,tests/oak/
+        flake8 . --count --show-source --statistics --max-line-length 82 --exclude ./oak/,tests/test_oak/
     - name: Lint with pylint
       run: |
         pylint $(git ls-files '*.py')
     - name: Run tests
       run: |
-        python -m pytest
+        python -m pytest --disable-warnings
