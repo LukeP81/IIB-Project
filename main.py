@@ -6,20 +6,18 @@ from other.utils import StateEnum
 
 def initialising_func():
     """placeholder"""
-    pass
 
 
 def optimising_func():
     """placeholder"""
-    pass
 
 
 def interpreting_func():
     """placeholder"""
-    pass
 
 
 def run() -> None:
+    """Launches the application in the correct state"""
     current_state = st.session_state.get('mode', None)
     if current_state is None:
         st.session_state['mode'] = StateEnum.INITIALISING
