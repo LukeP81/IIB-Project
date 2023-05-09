@@ -27,4 +27,4 @@ jobs:
         pylint $(git ls-files '*.py')
     - name: Run tests
       run: |
-        pytest tests/
+        pytest tests
