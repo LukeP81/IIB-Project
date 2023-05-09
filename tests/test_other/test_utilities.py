@@ -1,5 +1,5 @@
-"""Test utils.py"""
-from other.utils import StateEnum
+"""Test utilities.py"""
+from other.utilities import StateEnum
 
 
 def test_enum_options():

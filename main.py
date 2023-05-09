@@ -1,7 +1,7 @@
 """Main file"""
 
 import streamlit as st
-from other.utils import StateEnum
+from other.utilities import StateEnum
 
 
 def initialising_func():

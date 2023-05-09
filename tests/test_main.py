@@ -6,7 +6,7 @@ import pytest
 import streamlit_mock
 
 from main import run
-from other.utils import StateEnum
+from other.utilities import StateEnum
 
 
 @pytest.mark.parametrize(
