@@ -3,6 +3,7 @@ matplotlib==3.7.1
 numpy==1.24.3
 scipy==1.10.1
 tensorflow<2.11 #windows GPU compatability
+tensorflow-probability<0.19 #old tensorflow version compatability
 scikit-learn==1.2.2
 pytest==7.3.1
 tikzplotlib==0.10.1
