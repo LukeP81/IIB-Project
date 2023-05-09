@@ -19,14 +19,19 @@ def interpreting_func():
     pass
 
 
-current_state = st.session_state.get('mode', None)
-if current_state is None:
-    st.session_state['mode'] = StateEnum.INITIALISING
+def run() -> None:
+    current_state = st.session_state.get('mode', None)
+    if current_state is None:
+        st.session_state['mode'] = StateEnum.INITIALISING
 
-state_func = {
-    StateEnum.INITIALISING: initialising_func,
-    StateEnum.OPTIMISING: optimising_func,
-    StateEnum.INTERPRETING: interpreting_func,
-}
+    state_func = {
+        StateEnum.INITIALISING: initialising_func,
+        StateEnum.OPTIMISING: optimising_func,
+        StateEnum.INTERPRETING: interpreting_func,
+    }
 
-state_func[current_state]()
+    state_func[current_state]()
+
+
+if __name__ == "__main__":
+    run()
