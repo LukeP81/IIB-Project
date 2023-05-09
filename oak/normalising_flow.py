@@ -2,6 +2,10 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+"""
+Normalising flow
+"""
+
 import gpflow
 import numpy as np
 import tensorflow as tf
@@ -62,14 +66,14 @@ class Normalizer(gpflow.base.Module):
         y = self.bijector(x).numpy()
         ax.plot(x, y, "k.", label="Gaussian")
         ax.legend()
-        
+
         ax_x = f.add_axes([0.3, 0.05, 0.65, 0.25], sharex=ax)
         ax_x.hist(x, bins=20)
         ax_y = f.add_axes([0.05, 0.3, 0.25, 0.65], sharey=ax)
         ax_y.hist(y, bins=20, orientation="horizontal")
         ax_y.set_xlim(ax_y.get_xlim()[::-1])
         plt.title(title)
-        
+
 
     def KL_objective(self):
         return 0.5 * tf.reduce_mean(

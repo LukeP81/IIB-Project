@@ -2,6 +2,12 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+"""
+Plotting utilities
+"""
+
+# pylint: disable = line-too-long
+
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, List, Optional, Union

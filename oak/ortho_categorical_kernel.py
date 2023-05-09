@@ -2,6 +2,12 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+"""
+Orthogonal categorical kernel
+"""
+
+# pylint: disable = line-too-long
+
 import gpflow
 import tensorflow as tf
 from gpflow.base import Parameter

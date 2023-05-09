@@ -2,6 +2,10 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+"""
+Orthogonal binary kernel
+"""
+
 import gpflow
 import numpy as np
 import tensorflow as tf
