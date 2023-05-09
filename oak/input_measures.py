@@ -2,19 +2,19 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
+from typing import Optional
+# -
+
+import numpy as np
+import tensorflow as tf
+
 """
 Input measure
 """
 
-# pylint: disable = invalid-name, too-few-public-methods
-
-from typing import Optional
-import numpy as np
-import tensorflow as tf
-
 
 class Measure:
-    """Base measure class"""
+    pass
 
 
 class UniformMeasure(Measure):
@@ -46,8 +46,7 @@ class EmpiricalMeasure(Measure):
     :return: Empirical dirac measure for inputs with weights on the locations
     """
 
-    def __init__(self, location: np.ndarray,
-                 weights: Optional[np.ndarray] = None):
+    def __init__(self, location: np.ndarray, weights: Optional[np.ndarray] = None):
         self.location = location
         if weights is None:
             weights = 1 / len(location) * np.ones((location.shape[0], 1))
@@ -65,8 +64,7 @@ class MOGMeasure(Measure):
     :return: mixture of Gaussian measure
     """
 
-    def __init__(self, means: np.ndarray, variances: np.ndarray,
-                 weights: np.ndarray):
+    def __init__(self, means: np.ndarray, variances: np.ndarray, weights: np.ndarray):
         tf.debugging.assert_shapes(
             [(means, ("K",)), (variances, ("K",)), (weights, ("K",))]
         )

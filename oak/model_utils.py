@@ -2,16 +2,10 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: Apache-2.0
 
-"""
-Model Utilities
-"""
-
-# pylint: disable = line-too-long, invalid-name, too-many-arguments, too-many-locals, too-many-instance-attributes, too-many-branches, too-many-statements, attribute-defined-outside-init
-
 import os
 import time
 from pathlib import Path
-from typing import Callable, List, Optional, Union, Any
+from typing import Callable, List, Optional, Union
 import gpflow
 import numpy as np
 import tensorflow as tf
@@ -85,12 +79,12 @@ def load_model(
     model_params = np.load(str(filename), allow_pickle=True)["hyperparams"]
 
     if load_all_parameters:
-        for i, parameter in enumerate(model.parameters):
-            parameter.assign(model_params[i])
+        for i in range(len(model.parameters)):
+            model.parameters[i].assign(model_params[i])
     else:
-        for i, parameter in enumerate(model.trainable_parameters):
-            print(model_params[i], parameter)
-            parameter.assign(model_params[i])
+        for i in range(len(model.trainable_parameters)):
+            print(model_params[i], model.trainable_parameters[i])
+            model.trainable_parameters[i].assign(model_params[i])
 
 
 def create_model_oak(
@@ -167,8 +161,8 @@ def create_model_oak(
     if use_sparsity_prior:
         print("Using sparsity prior")
         if share_var_across_orders:
-            for mkv in model.kernel.variances:
-                mkv.prior = tfd.Gamma(f64(1.0), f64(0.2))
+            for p in model.kernel.variances:
+                p.prior = tfd.Gamma(f64(1.0), f64(0.2))
     # Initialise likelihood variance to small value to avoid finding all-noise explanation minima
     model.likelihood.variance.assign(0.01)
     if optimise:
@@ -198,13 +192,11 @@ def apply_normalise_flow(X: tf.Tensor, input_flows: List[Normalizer]) -> tf.Tens
 
 
 class oak_model:
-    """OAK model"""
-
     def __init__(
         self,
         max_interaction_depth=2,
         num_inducing=200,
-        lengthscale_bounds: Any = None,
+        lengthscale_bounds=[1e-3, 1e3],
         binary_feature: Optional[List[int]] = None,
         categorical_feature: Optional[List[int]] = None,
         empirical_measure: Optional[List[int]] = None,
@@ -226,15 +218,12 @@ class oak_model:
         :param sparse: Boolean to indicate whether to use sparse GP with inducing points. Defaults to False.
         :param use_normalising_flow: whether to use normalising flow, if not, continuous features are standardised
         :param share_var_across_orders: whether to share the same variance across orders,
-           if False, it uses kernel of the form /prod_i(1+k_i) in Duvenaud (2011).
+           if False, it uses kernel of the form \prod_i(1+k_i) in Duvenaud (2011).
         :return: OAK model class with model fitting, prediction, attribution and plotting utils.
         """
         self.max_interaction_depth = max_interaction_depth
         self.num_inducing = num_inducing
-        if lengthscale_bounds is None:
-            self.lengthscale_bounds = [1e-3, 1e3]
-        else:
-            self.lengthscale_bounds = lengthscale_bounds
+        self.lengthscale_bounds = lengthscale_bounds
         self.binary_feature = binary_feature
         self.categorical_feature = categorical_feature
         self.use_sparsity_prior = use_sparsity_prior
@@ -291,7 +280,7 @@ class oak_model:
                 )
         if self.gmm_measure is not None:
             if len(self.gmm_measure) != self.num_dims:
-                raise ValueError(
+                return ValueError(
                     f"Must specify number of components for each inputs dimension 1..{X.shape[0]}"
                 )
             idx_gmm = np.flatnonzero(self.gmm_measure)
@@ -420,12 +409,8 @@ class oak_model:
 
     def optimise(
         self,
-        compiling: bool = True,
+        compile: bool = True,
     ):
-        """
-        :param compiling: whether to wrap minimize function in a 'tf.function()'
-        :return: optimises model
-        """
 
         print("Model prior to optimisation")
         gpflow.utilities.print_summary(self.m, fmt="notebook")
@@ -436,12 +421,12 @@ class oak_model:
             self.m.training_loss_closure(),
             self.m.trainable_variables,
             method="BFGS",
-            compile=compiling,
+            compile=compile,
         )
         gpflow.utilities.print_summary(self.m, fmt="notebook")
         print(f"Training took {time.time() - t_start:.1f} seconds.")
 
-    def predict(self, X: tf.Tensor, clip=False) -> Optional[tf.Tensor]:
+    def predict(self, X: tf.Tensor, clip=False) -> tf.Tensor:
         """
         :param X: inputs to predict the response on
         :param clip: whether to slip X between x_min and x_max along each dimension
@@ -456,7 +441,6 @@ class oak_model:
             return self.scaler_y.inverse_transform(y_pred)[:, 0]
         except ValueError:
             print("test X is outside the range of training input, try clipping X.")
-        return None
 
     def get_loglik(self, X: tf.Tensor, y: tf.Tensor, clip=False) -> tf.Tensor:
         """
@@ -505,7 +489,7 @@ class oak_model:
             mean_i, std_i = self.scaler_X_empirical.mean_[continuous_i], np.sqrt(
                 self.scaler_X_empirical.var_[continuous_i]
             )
-            transformer_x = lambda x: x * std_i + mean_i #pylint: disable = unnecessary lambda expression
+            transformer_x = lambda x: x * std_i + mean_i
         elif self.gmm_measure is not None and i in self.gmm_measure:
             transformer_x = None
         else:
@@ -523,7 +507,7 @@ class oak_model:
         mu = 0
         selected_dims, _ = get_list_representation(self.m.kernel, num_dims=num_dims)
         tuple_of_indices = selected_dims[1:]
-        _, sobols = compute_sobol_oak(
+        model_indices, sobols = compute_sobol_oak(
             self.m,
             delta,
             mu,
@@ -551,7 +535,7 @@ class oak_model:
         tikz_path: Optional[str] = None,
         ylim: Optional[List[float]] = None,
         quantile_range: Optional[List[float]] = None,
-        log_axis: Optional[List[bool]] = None,
+        log_axis: Optional[List[bool]] = [False, False],
         grid_range: Optional[List[np.ndarray]] = None,
         log_bin: Optional[List[bool]] = None,
         num_bin: Optional[int] = 100,
@@ -573,7 +557,7 @@ class oak_model:
         :return: plotting of individual effects
         """
         if X_columns is None:
-            X_columns = [f"feature {i}" for i in range(self.num_dims)]
+            X_columns = ["feature %d" % i for i in range(self.num_dims)]
 
         if X_lists is None:
             X_lists = [None for i in range(len(X_columns))]
@@ -587,8 +571,6 @@ class oak_model:
         if quantile_range is None:
             quantile_range = [None for i in range(len(X_columns))]
 
-        if log_axis is None:
-            log_axis = [False, False]
         if log_bin is None:
             log_bin = [False for i in range(len(X_columns))]
 
