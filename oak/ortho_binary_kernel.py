@@ -6,6 +6,9 @@
 Orthogonal binary kernel
 """
 
+# pylint: disable = line-too-long, invalid-name, too-many-arguments, too-many-locals, too-many-instance-attributes, too-many-branches, too-many-statements
+
+
 import gpflow
 import numpy as np
 import tensorflow as tf
