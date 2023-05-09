@@ -1,1 +1,1 @@
-exclude = oak/
+exclude = ./oak/
