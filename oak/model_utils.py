@@ -291,7 +291,7 @@ class oak_model:
                 )
         if self.gmm_measure is not None:
             if len(self.gmm_measure) != self.num_dims:
-                return ValueError(
+                raise ValueError(
                     f"Must specify number of components for each inputs dimension 1..{X.shape[0]}"
                 )
             idx_gmm = np.flatnonzero(self.gmm_measure)
@@ -420,8 +420,12 @@ class oak_model:
 
     def optimise(
         self,
-        compile: bool = True,
+        compiling: bool = True,
     ):
+        """
+        :param compiling: whether to wrap minimize function in a 'tf.function()'
+        :return: optimises model
+        """
 
         print("Model prior to optimisation")
         gpflow.utilities.print_summary(self.m, fmt="notebook")
@@ -432,7 +436,7 @@ class oak_model:
             self.m.training_loss_closure(),
             self.m.trainable_variables,
             method="BFGS",
-            compile=compile,
+            compile=compiling,
         )
         gpflow.utilities.print_summary(self.m, fmt="notebook")
         print(f"Training took {time.time() - t_start:.1f} seconds.")
