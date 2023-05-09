@@ -4,9 +4,7 @@
 
 """Model Utilities"""
 
-# pylint: disable = line-too-long, invalid-name, too-many-arguments,
-# too-many-locals, too-many-instance-attributes, too-many-branches,
-# too-many-statements
+# pylint: disable = line-too-long, invalid-name, too-many-arguments, too-many-locals, too-many-instance-attributes, too-many-branches, too-many-statements
 
 import os
 import time
