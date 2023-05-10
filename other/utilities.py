@@ -3,8 +3,10 @@
 import streamlit as st
 
 
-class AppStates:
-    """Class for holding possible states of the application"""
+class AppStates:  # pylint: disable= too-few-public-methods
+    """Class for holding possible states of the application
+    (would be an Enum but there were issues with .value and this
+    class is only used to enforce st.session_state values)"""
 
     INITIALISING = "initialising"
     OPTIMISING = "optimising"
