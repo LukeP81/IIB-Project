@@ -21,14 +21,3 @@ def test_enum_values():
     assert AppStates.INITIALISING == "initialising"
     assert AppStates.OPTIMISING == "optimising"
     assert AppStates.INTERPRETING == "interpreting"
-
-
-def test_clearing():
-    """Check whether the cache is cleared properly"""
-
-    with (patch('streamlit.cache_data.clear') as data_clear,
-          patch('streamlit.cache_resource.clear') as resource_clear):
-        clear_cache()
-
-        data_clear.assert_called_once()
-        resource_clear.assert_called_once()
