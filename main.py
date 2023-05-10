@@ -1,7 +1,7 @@
 """Main file"""
 
 import streamlit as st
-from other.utilities import StateEnum
+from other.utilities import AppStates, clear_cache
 
 
 def initialising_func():
@@ -18,16 +18,19 @@ def interpreting_func():
 
 def run() -> None:
     """Launches the application in the correct state"""
+
     current_state = st.session_state.get('mode', None)
+
     if current_state is None:
-        st.session_state['mode'] = StateEnum.INITIALISING
+        clear_cache()
+        st.session_state['mode'] = AppStates.INITIALISING
+        current_state = AppStates.INITIALISING
 
     state_func = {
-        StateEnum.INITIALISING: initialising_func,
-        StateEnum.OPTIMISING: optimising_func,
-        StateEnum.INTERPRETING: interpreting_func,
+        AppStates.INITIALISING: initialising_func,
+        AppStates.OPTIMISING: optimising_func,
+        AppStates.INTERPRETING: interpreting_func,
     }
-
     state_func[current_state]()
 
 

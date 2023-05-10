@@ -1,10 +1,17 @@
 """Module for utility functions and classes"""
-from enum import Enum
+
+import streamlit as st
 
 
-class StateEnum(Enum):
+class AppStates:
     """Class for holding possible states of the application"""
 
     INITIALISING = "initialising"
     OPTIMISING = "optimising"
     INTERPRETING = "interpreting"
+
+
+def clear_cache() -> None:
+    """Clears all caches from streamlit"""
+    st.cache_data.clear()
+    st.cache_resource.clear()
