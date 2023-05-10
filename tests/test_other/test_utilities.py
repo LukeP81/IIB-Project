@@ -1,8 +1,6 @@
 """Test utilities.py"""
 
-from unittest.mock import patch
-
-from other.utilities import AppStates, clear_cache
+from other.utilities import AppStates
 
 
 def test_enum_options():
