@@ -8,4 +8,5 @@ scipy==1.10.1
 streamlit==1.22.0
 streamlit-mock
 tensorflow<2.11 #windows GPU compatability
+tensorflow-probability<0.19 #old tensorflow version compatability
 tikzplotlib==0.10.1
