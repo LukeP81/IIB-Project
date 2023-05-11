@@ -1,11 +1,11 @@
 gpflow==2.8.0
 matplotlib==3.7.1
-numpy==1.24.3
-scipy==1.10.1
-tensorflow<2.11 #windows GPU compatability
-tensorflow-probability<0.19 #old tensorflow version compatability
-scikit-learn==1.2.2
+numpy==1.23.5
+pandas==2.0.1
 pytest==7.3.1
+scikit-learn==1.2.2
+scipy==1.10.1
+streamlit==1.22.0
+streamlit-mock
+tensorflow<2.11 #windows GPU compatability
 tikzplotlib==0.10.1
-streamlit==1.18.1
-streamlit_mock

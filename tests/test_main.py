@@ -14,7 +14,7 @@ def test_startup():
 
     with (
         patch.dict('streamlit.session_state', {}) as session_state,
-        patch('main.initialising_func') as mock_func,
+        patch('main.Initialise.display') as mock_func,
         patch('main.clear_cache') as mock_clear_cache
     ):
         run()
@@ -26,7 +26,7 @@ def test_startup():
 
 
 @pytest.mark.parametrize(
-    "func, state", [('initialising_func', AppStates.INITIALISING),
+    "func, state", [('Initialise.display', AppStates.INITIALISING),
                     ('optimising_func', AppStates.OPTIMISING),
                     ('interpreting_func', AppStates.INTERPRETING)]
 )

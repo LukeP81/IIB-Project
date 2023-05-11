@@ -1,11 +1,9 @@
 """Main file"""
 
 import streamlit as st
+
 from other.utilities import AppStates, clear_cache
-
-
-def initialising_func():
-    """placeholder"""
+from initialising.initialise_home import Initialise
 
 
 def optimising_func():
@@ -16,8 +14,20 @@ def interpreting_func():
     """placeholder"""
 
 
+def page_setup():
+    """Configure the page"""
+
+    st.set_page_config(page_title="OAK GP Interpretation",
+                       page_icon="🌳",
+                       layout="centered")
+    st.title("OAK GP Interpretation")
+    # todo sidebar stuff
+
+
 def run() -> None:
     """Launches the application in the correct state"""
+
+    page_setup()
 
     current_state = st.session_state.get('mode', None)
 
@@ -27,10 +37,11 @@ def run() -> None:
         current_state = AppStates.INITIALISING
 
     state_func = {
-        AppStates.INITIALISING: initialising_func,
+        AppStates.INITIALISING: Initialise.display,
         AppStates.OPTIMISING: optimising_func,
         AppStates.INTERPRETING: interpreting_func,
     }
+
     state_func[current_state]()
 
 
