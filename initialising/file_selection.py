@@ -93,7 +93,7 @@ class FileSelector:
         example_file_df.index.name = "Filename"
 
         st.write("Example Files")
-        st.table(data=example_file_df)
+        st.dataframe(data=example_file_df)
 
         example_files = list(files_data.keys())
 

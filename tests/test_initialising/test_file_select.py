@@ -3,7 +3,7 @@
 import pytest
 import streamlit_mock
 
-from initialising.file_select import FileSelector
+from initialising.file_selection import FileSelector
 
 
 class MockFile:  # pylint: disable = too-few-public-methods
