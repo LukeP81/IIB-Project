@@ -12,7 +12,7 @@ class FileFormatError(Exception):
     """Error for an incorrect format of file"""
 
 
-class UploadedDetails:
+class UploadedDetails:  # pylint: disable = too-few-public-methods
     """Class containing methods for getting uploaded
     file data and feature names"""
 

@@ -10,7 +10,12 @@ from initialising.file_details import UploadedDetails, load_example, \
     FileFormatError
 
 
-class Initialise:
+def extract_data(file: Any) -> dict:
+    """Potential placeholder for allowing different file types"""
+    return mat4py.loadmat(filename=file)
+
+
+class Initialise:  # pylint: disable = too-few-public-methods
     """Class for holding main display methods for initialisation"""
 
     @classmethod
@@ -32,7 +37,7 @@ class Initialise:
             load_example(filename=file)
         else:
             with st.container():
-                file_data = mat4py.loadmat(filename=file)
+                file_data = extract_data(file=file)
                 try:
                     UploadedDetails.display(file_data=file_data,
                                             filename=file.name)

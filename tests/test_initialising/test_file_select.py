@@ -4,17 +4,10 @@ import pytest
 import streamlit_mock
 
 from initialising.file_selection import FileSelector
+from other.custom_mocks import MockUploadedFile
 
-
-class MockFile:  # pylint: disable = too-few-public-methods
-    """Class for mocking UploadedFile object"""
-
-    def __init__(self, name):
-        self.name = name
-
-
-file1 = MockFile("file1")
-file2 = MockFile("file2")
+file1 = MockUploadedFile("file1")
+file2 = MockUploadedFile("file2")
 multiple_files = [file1, file2]
 
 
