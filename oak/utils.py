@@ -340,6 +340,7 @@ def compute_sobol_oak(
     delta: float,
     mu: float,
     share_var_across_orders: Optional[bool] = True,
+    callback: Optional[callable]=None
 ) -> Tuple[List[List[int]], List[float]]:
     """
     Compute sobol indices for Duvenaud model
@@ -350,7 +351,6 @@ def compute_sobol_oak(
            if False, it uses original OrthogonalRBFKernel kernel \prod_i(1+k_i).
     :return: list of input dimension indices and list of sobol indices
     """
-    print(model.kernel)
     assert isinstance(model.kernel, OAKKernel), "only work for OAK kernel"
     num_dims = model.data[0].shape[1]
 
@@ -366,8 +366,13 @@ def compute_sobol_oak(
     alpha = get_model_sufficient_statistics(model, get_L=False)
     sobol = []
     L_list = []
-    for kernel in kernel_list:
+    num_kernels = len(kernel_list)
+    for i, kernel in enumerate(kernel_list):
         assert isinstance(kernel, KernelComponenent)
+
+        if callback is not None:
+            callback(i, num_kernels)
+
         if len(kernel.iComponent_list) == 0:
             continue  # skip constant term
         L = np.ones((N, N))

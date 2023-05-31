@@ -1,11 +1,9 @@
 """Module for setting data and feature names of files"""
-from typing import List
+from typing import List, Optional
 
 import mat4py
 import pandas as pd
 import streamlit as st
-
-from cacheable_api.file_api import get_file_data, get_feature_names
 
 
 class FileFormatError(Exception):
@@ -81,13 +79,13 @@ class UploadedDetails:  # pylint: disable = too-few-public-methods
         return value_name
 
     @classmethod
-    def display(cls, file_data: dict, filename: str) -> None:
+    def display(cls, file_data: dict, filename: str) -> Optional[dict]:
         """Method for getting file data and displaying the UI for feature naming
         :param file_data: the data from the file
         :param filename: the name of the file
         :return: None
         """
-
+        st.title("File Details")
         file_keys = cls._get_file_keys(file_data=file_data)
         num_features = len(file_data[file_keys[0]][0])
 
@@ -117,35 +115,28 @@ class UploadedDetails:  # pylint: disable = too-few-public-methods
             if st.button(label="next",
                          key="file_details_next_button",
                          help="Press this to advance to optimisation"):
-                # cache x and y data
-                st.session_state["file_x_data"] = file_data[file_keys[0]]
-                st.session_state["file_y_data"] = file_data[file_keys[1]]
-                _ = get_file_data()
-                # cache feature names
-                st.session_state["data_feature_names"] = feature_names
-                st.session_state["data_value_name"] = value_name
-                _ = get_feature_names()
+                return {"x": file_data[file_keys[0]],
+                        "y": file_data[file_keys[1]],
+                        "f": feature_names,
+                        "v": value_name,
+                        }
+        return None
 
 
-def load_example(filename):
+def load_example(file_data: dict, filename: str):
     """Loads the data and feature names from an example file into cache"""
-    file_data = mat4py.loadmat(filename=f"data/{filename}.mat")
-
-    # cache x and y data
-    st.session_state["file_x_data"] = list(file_data.values())[0]
-    st.session_state["file_y_data"] = list(file_data.values())[1]
-    _ = get_file_data()
 
     # fine to be hardcoded as definite examples
     feature_names = {
         "concrete": [['Cement', 'Slag', 'Fly Ash', 'Water',
                       'Plasticizer', 'Coarse', 'Fine', 'Age'],
                      'Strength'],
-        "cw1e": [['Dim1', 'Dim2'],
-                 'Yval']
+        "cw1e": [['Dimension 1', 'Dimension 2'],
+                 'Y value']
     }
 
-    # cache feature names
-    st.session_state["data_feature_names"] = feature_names[filename][0]
-    st.session_state["data_value_name"] = feature_names[filename][1]
-    _ = get_feature_names()
+    return {"x": list(file_data.values())[0],
+            "y": list(file_data.values())[1],
+            "f": feature_names[filename][0],
+            "v": feature_names[filename][1],
+            }

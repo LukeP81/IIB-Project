@@ -30,7 +30,7 @@ def test_cov_X_s_Gaussian(kernel: gpflow.kernels.Kernel):
 
     samples_std_normal = np.random.normal(size=10000)[:, None]
     k_cov_numeric = np.mean(k.base_kernel.K(np.zeros((1, 1)), samples_std_normal))
-    print(np.abs(k_cov - k_cov_numeric))
+    # print(np.abs(k_cov - k_cov_numeric))
     np.testing.assert_almost_equal(
         np.abs(k_cov - k_cov_numeric), 0.0, decimal=_THRESHOLD_NUMERICAL_ACCURACY
     )
@@ -46,7 +46,7 @@ def test_var_s_Gaussian(kernel: gpflow.kernels.Kernel):
 
     samples_std_normal = np.random.normal(size=10000)[:, None]
     k_var_numeric = np.mean(k.cov_X_s(samples_std_normal))
-    print(np.abs(k_var - k_var_numeric))
+    # print(np.abs(k_var - k_var_numeric))
     np.testing.assert_almost_equal(
         np.abs(k_var - k_var_numeric), 0.0, decimal=_THRESHOLD_NUMERICAL_ACCURACY
     )
@@ -58,7 +58,7 @@ def test_cov_X_s_Uniform():
 
     samples_std_normal = np.random.uniform(size=10000)[:, None]
     k_cov_numeric = np.mean(k.base_kernel.K(np.zeros((1, 1)), samples_std_normal))
-    print(np.abs(k_cov - k_cov_numeric))
+    # print(np.abs(k_cov - k_cov_numeric))
     np.testing.assert_almost_equal(
         np.abs(k_cov - k_cov_numeric), 0.0, decimal=_THRESHOLD_NUMERICAL_ACCURACY
     )
@@ -70,7 +70,7 @@ def test_var_s_Uniform():
 
     samples_std_normal = np.random.uniform(size=10000)[:, None]
     k_var_numeric = np.mean(k.cov_X_s(samples_std_normal))
-    print(np.abs(k_var - k_var_numeric))
+    # print(np.abs(k_var - k_var_numeric))
     np.testing.assert_almost_equal(
         np.abs(k_var - k_var_numeric), 0.0, decimal=_THRESHOLD_NUMERICAL_ACCURACY
     )

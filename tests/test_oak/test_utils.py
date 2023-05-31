@@ -24,17 +24,17 @@ def test_initialize_kmeans_with_binary(binary_index: list, n_cluster: int):
     dim = len(binary_index) + len(continuous_index)
     X = np.zeros((N, dim))
     for i in binary_index:
-        print("shape of X ", X.shape)
-        print("i = ", i)
+        # print("shape of X ", X.shape)
+        # print("i = ", i)
         X[:, i] = np.random.binomial(1, 0.33, N)
-    print("continuous_index", continuous_index)
+    # print("continuous_index", continuous_index)
     if len(continuous_index) > 0:
         for j in continuous_index:
             X[:, j] = np.random.normal(0, 4, N)
     else:
         continuous_index = None
     Z = initialize_kmeans_with_binary(X, binary_index, continuous_index, n_cluster)
-    print(X)
+    # print(X)
     assert Z.shape == (n_cluster, dim)
     assert isinstance(Z, np.ndarray)
 
@@ -63,14 +63,14 @@ def test_get_prediction_component(share_var_across_orders: bool):
     prediction_list = get_prediction_component(
         oak.m,
         oak.alpha,
-        oak._transform_x(X),
+        oak.transform_x(X),
         share_var_across_orders=share_var_across_orders,
     )
     out = np.zeros(y.shape[0])
     for i in range(len(prediction_list)):
         out += prediction_list[i].numpy()
 
-    out_all = oak.m.predict_f(oak._transform_x(X))[0].numpy()[:, 0]
-    print(f"variance 0 = {oak.m.kernel.variances[0]}")
+    out_all = oak.m.predict_f(oak.transform_x(X))[0].numpy()[:, 0]
+    # print(f"variance 0 = {oak.m.kernel.variances[0]}")
     np.testing.assert_allclose(out, out_all)
 

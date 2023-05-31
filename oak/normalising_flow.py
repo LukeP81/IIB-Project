@@ -81,5 +81,5 @@ class Normalizer(gpflow.base.Module):
     def kstest(self):
         # Kolmogorov-Smirnov test for normality of transformed data
         s, pvalue = stats.kstest(self.bijector(self.x).numpy()[:,0], "norm")
-        print("KS test statistic is %.3f, p-value is %.8f" % (s, pvalue))
+        # print("KS test statistic is %.3f, p-value is %.8f" % (s, pvalue))
         return s, pvalue

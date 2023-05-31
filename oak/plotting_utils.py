@@ -28,7 +28,7 @@ def save_fig_list(
 ):
     # save figures to local directory
     dirname.mkdir(parents=True, exist_ok=True)
-    print(f"Saving figures to {dirname}")
+    # print(f"Saving figures to {dirname}")
     for f in fig_list:
         f.fig.savefig(dirname / (f.description + ".pdf"), bbox_inches="tight")
 

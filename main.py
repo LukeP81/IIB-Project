@@ -4,14 +4,8 @@ import streamlit as st
 
 from other.utilities import AppStates, clear_cache
 from initialising.initialise_home import Initialise
-
-
-def optimising_func():
-    """placeholder"""
-
-
-def interpreting_func():
-    """placeholder"""
+from optimising.optimise_home import Optimize
+from interpreting.interpret_home import Interpret
 
 
 def page_setup():
@@ -20,8 +14,8 @@ def page_setup():
     st.set_page_config(page_title="OAK GP Interpretation",
                        page_icon="🌳",
                        layout="wide")
-    st.title("OAK GP Interpretation")
-    # todo sidebar stuff
+    # st.title("OAK GP Interpretation")
+    # todo sidebar
 
 
 def run() -> None:
@@ -38,10 +32,9 @@ def run() -> None:
 
     state_func = {
         AppStates.INITIALISING: Initialise.display,
-        AppStates.OPTIMISING: optimising_func,
-        AppStates.INTERPRETING: interpreting_func,
+        AppStates.OPTIMISING: Optimize.display,
+        AppStates.INTERPRETING: Interpret.display,
     }
-
     state_func[current_state]()
 
 

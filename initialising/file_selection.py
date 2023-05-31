@@ -11,7 +11,8 @@ class FileSelector:
 
     @classmethod
     def load_model(cls):
-        """todo: probably place in extra tab"""
+        pass
+        # todo: probably place in extra tab
 
     @classmethod
     def display(cls) -> Optional[Any]:
@@ -20,7 +21,7 @@ class FileSelector:
         issues when importing directly so has been replaced with Any.
         """
 
-        st.subheader("File Selection")
+        st.title("File Selection")
         upload_tab, example_tab = st.tabs(["Upload File", "Example File"])
 
         with upload_tab:
@@ -82,12 +83,12 @@ class FileSelector:
         """Private method for example files"""
 
         file_index = ["Dimensions", "Datapoints"]
-        files_data = {"cw1a": ["1", "75"],
-                      "cw1e": ["2", "121"],
+        files_data = {"cw1e": ["2", "121"],
                       "concrete": ["8", "1030"],
-                      "pima": ["8", "768"],
-                      "servo": ["4", "167"]}
-
+                      }
+        # "cw1a": ["1", "75"],
+        # "pima": ["8", "768"],
+        # "servo": ["4", "167"]
         example_file_df = pd.DataFrame(data=files_data,
                                        index=file_index)
         example_file_df.index.name = "Filename"

@@ -2,22 +2,53 @@
 
 import streamlit as st
 
-
-@st.cache_data
-def get_saved_file():
-    """Caches the chosen file"""
-    return st.session_state.get("saved_file", None)
+from cacheable_api.api_exceptions import NotCachedError
 
 
-@st.cache_data
-def get_file_data():
-    """Caches the data from the chosen file"""
-    return (st.session_state.get("file_x_data", None),
-            st.session_state.get("file_y_data", None))
+class FileAPI:
 
+    @staticmethod
+    @st.cache_data
+    def get_saved_file(_file=None):
+        """Caches the chosen file"""
+        if _file is None:
+            raise NotCachedError
+        return _file
 
-@st.cache_data
-def get_feature_names():
-    """Caches the feature names"""
-    return (st.session_state.get("file_feature_names", None),
-            st.session_state.get("file_value_name", None))
+    @staticmethod
+    def set_saved_file(file):
+        _ = FileAPI.get_saved_file(file)
+
+    @staticmethod
+    @st.cache_data
+    def get_file_data(_file_x_data=None, _file_y_data=None):
+        """Caches the data from the chosen file"""
+        if _file_x_data is None or _file_y_data is None:
+            raise NotCachedError
+        return _file_x_data, _file_y_data
+
+    @staticmethod
+    def set_file_data(file_x_data, file_y_data):
+        _ = FileAPI.get_file_data(file_x_data, file_y_data)
+
+    @staticmethod
+    @st.cache_data
+    def get_feature_names(_file_feature_names=None, _file_value_name=None):
+        """Caches the feature names"""
+        if _file_feature_names is None or _file_value_name is None:
+            raise NotCachedError
+        return _file_feature_names, _file_value_name
+
+    @staticmethod
+    def set_feature_names(data_feature_names, data_value_name):
+        _ = FileAPI.get_feature_names(data_feature_names, data_value_name)
+
+    @staticmethod
+    def get_covariate_names():
+        """Caches the feature names"""
+        return FileAPI.get_feature_names()[0]
+
+    @staticmethod
+    def get_value_name():
+        """Caches the feature names"""
+        return FileAPI.get_feature_names()[1]

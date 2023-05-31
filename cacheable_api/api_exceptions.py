@@ -1,0 +1,2 @@
+class NotCachedError(Exception):
+    """"""  # todo

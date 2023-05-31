@@ -64,7 +64,7 @@ def test_f1():
     )
     y = f1(Z[0, :], Z[1, :], sigma, lengthscales, delta, mu)
 
-    print(np.abs(y_numerical - y))
+    # print(np.abs(y_numerical - y))
     assert np.abs(y_numerical - y) < TOL
 
 
@@ -204,6 +204,6 @@ def test_compute_L_binary_kernel(p: float):
 
     L1 = np.matmul(K(X, x0), K(x0, X)) * p + np.matmul(K(X, x1), K(x1, X)) * (1 - p)
 
-    print(np.max(L - L1))
+    # print(np.max(L - L1))
     assert np.max(L - L1) < TOL
 

@@ -186,7 +186,7 @@ def test_sobol_oak_kernel_empirical(
     prediction_list = get_prediction_component(
         oak.m,
         alpha,
-        oak._transform_x(X),
+        oak.transform_x(X),
         share_var_across_orders=share_var_across_orders,
     )
     # calculate variance of each functional component with empirical data
@@ -303,29 +303,29 @@ def test_compute_sobol_with_binary(is_sgpr: bool, both_binary: bool):
     assert model_indices == selected_dims
     assert np.all(np.array(sobol) >= 0)
 
-    print(sobol)
+    # print(sobol)
     if both_binary:
         s1 = (1 + p2) ** 2 * p1 * (1 - p1)
         s2 = (1 + p1) ** 2 * p2 * (1 - p2)
-        print(
-            np.array(
-                [
-                    s1,
-                    s2,
-                    p1
-                    - p1 ** 2
-                    + p2
-                    - p2 ** 2
-                    + 5 * p1 * p2
-                    - p1 ** 2 * p2 ** 2
-                    - 2 * p1 ** 2 * p2
-                    - 2 * p1 * p2 ** 2
-                    - s1
-                    - s2,
-                ],
-                dtype=float,
-            )
-        )
+        # print(
+        #     np.array(
+        #         [
+        #             s1,
+        #             s2,
+        #             p1
+        #             - p1 ** 2
+        #             + p2
+        #             - p2 ** 2
+        #             + 5 * p1 * p2
+        #             - p1 ** 2 * p2 ** 2
+        #             - 2 * p1 ** 2 * p2
+        #             - 2 * p1 * p2 ** 2
+        #             - s1
+        #             - s2,
+        #         ],
+        #         dtype=float,
+        #     )
+        # )
         np.testing.assert_array_almost_equal(
             sobol,
             np.array(
@@ -351,11 +351,11 @@ def test_compute_sobol_with_binary(is_sgpr: bool, both_binary: bool):
     else:
         s1 = p1 * (1 - p1)
         s2 = delta * (1 + p1) ** 2
-        print(
-            np.array(
-                [s1, s2, delta + p1 * (1 - p1) + 3 * p1 * delta - s1 - s2], dtype=float
-            )
-        )
+        # print(
+        #     np.array(
+        #         [s1, s2, delta + p1 * (1 - p1) + 3 * p1 * delta - s1 - s2], dtype=float
+        #     )
+        # )
         np.testing.assert_array_almost_equal(
             sobol,
             np.array(

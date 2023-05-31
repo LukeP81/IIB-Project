@@ -83,7 +83,7 @@ def load_model(
             model.parameters[i].assign(model_params[i])
     else:
         for i in range(len(model.trainable_parameters)):
-            print(model_params[i], model.trainable_parameters[i])
+            # print(model_params[i], model.trainable_parameters[i])
             model.trainable_parameters[i].assign(model_params[i])
 
 
@@ -102,6 +102,7 @@ def create_model_oak(
     use_sparsity_prior: bool = True,
     gmm_measures: Optional[List[MOGMeasure]] = None,
     share_var_across_orders: Optional[bool] = True,
+    opt_callback: Optional[callable] = None,
 ) -> GPModel:
     """
     :param num_dims: number of dimensions of inputs
@@ -159,7 +160,7 @@ def create_model_oak(
         model = GPR(data, mean_function=None, kernel=k)
     # set priors for variance
     if use_sparsity_prior:
-        print("Using sparsity prior")
+        # print("Using sparsity prior")
         if share_var_across_orders:
             for p in model.kernel.variances:
                 p.prior = tfd.Gamma(f64(1.0), f64(0.2))
@@ -169,10 +170,11 @@ def create_model_oak(
         t_start = time.time()
         opt = gpflow.optimizers.Scipy()
         opt.minimize(
-            model.training_loss_closure(), model.trainable_variables, method="BFGS"
+            model.training_loss_closure(), model.trainable_variables,
+            method="BFGS", step_callback=opt_callback
         )
-        gpflow.utilities.print_summary(model, fmt="notebook")
-        print(f"Training took {time.time() - t_start:.1f} seconds.")
+        # gpflow.utilities.print_summary(model, fmt="notebook")
+        # print(f"Training took {time.time() - t_start:.1f} seconds.")
     return model
 
 
@@ -252,6 +254,9 @@ class oak_model:
         Y: tf.Tensor,
         optimise: bool = True,
         initialise_inducing_points: bool = True,
+        opt_callback: Optional[callable] = None,
+        normalising_callback: Optional[callable] = None,
+
     ):
         """
         :param X, Y data to fit the model on
@@ -304,6 +309,7 @@ class oak_model:
         # scaling
         self.input_flows = [None] * self.num_dims
         for i in self.continuous_index:
+
             if (self.empirical_measure is not None) and (i in self.empirical_measure):
                 continue  # skip
             if self.estimated_gmm_measures[i] is not None:
@@ -311,6 +317,8 @@ class oak_model:
             d = X[:, i]
 
             if self.use_normalising_flow:
+                if normalising_callback is not None:
+                    normalising_callback(i, len(self.continuous_index))
                 n = Normalizer(d)
                 opt = gpflow.optimizers.Scipy()
                 opt.minimize(n.KL_objective, n.trainable_variables)
@@ -328,7 +336,7 @@ class oak_model:
             self.scaler_X_continuous = preprocessing.StandardScaler().fit(
                 X[:, self.continuous_index]
             )
-        self.X_scaled = self._transform_x(X)
+        self.X_scaled = self.transform_x(X)
 
         # calculate empirical location and weights after applying scaling X
         if self.empirical_measure is not None:
@@ -376,7 +384,7 @@ class oak_model:
 
             if initialise_inducing_points:
                 if (p0 is None) and (p is None):
-                    print("all features are continuous")
+                    # print("all features are continuous")
                     kmeans = KMeans(n_clusters=self.num_inducing, random_state=0).fit(
                         X_inducing
                     )
@@ -405,6 +413,7 @@ class oak_model:
             empirical_weights=self.empirical_weights,
             gmm_measures=self.estimated_gmm_measures,
             share_var_across_orders=self.share_var_across_orders,
+            opt_callback=opt_callback,
         )
 
     def optimise(
@@ -412,7 +421,7 @@ class oak_model:
         compile: bool = True,
     ):
 
-        print("Model prior to optimisation")
+        # print("Model prior to optimisation")
         gpflow.utilities.print_summary(self.m, fmt="notebook")
         self.alpha = None
         t_start = time.time()
@@ -424,7 +433,7 @@ class oak_model:
             compile=compile,
         )
         gpflow.utilities.print_summary(self.m, fmt="notebook")
-        print(f"Training took {time.time() - t_start:.1f} seconds.")
+        # print(f"Training took {time.time() - t_start:.1f} seconds.")
 
     def predict(self, X: tf.Tensor, clip=False) -> tf.Tensor:
         """
@@ -433,9 +442,9 @@ class oak_model:
         :return: predicted response on input X
         """
         if clip:
-            X_scaled = self._transform_x(np.clip(X, self.xmin, self.xmax))
+            X_scaled = self.transform_x(np.clip(X, self.xmin, self.xmax))
         else:
-            X_scaled = self._transform_x(X)
+            X_scaled = self.transform_x(X)
         try:
             y_pred = self.m.predict_f(X_scaled)[0].numpy()
             return self.scaler_y.inverse_transform(y_pred)[:, 0]
@@ -449,9 +458,9 @@ class oak_model:
         :return log likelihood on (X,y)
         """
         if clip:
-            X_scaled = self._transform_x(np.clip(X, self.xmin, self.xmax))
+            X_scaled = self.transform_x(np.clip(X, self.xmin, self.xmax))
         else:
-            X_scaled = self._transform_x(X)
+            X_scaled = self.transform_x(X)
 
         return (
             self.m.predict_log_density((X_scaled, self.scaler_y.transform(y)))
@@ -459,7 +468,7 @@ class oak_model:
             .mean()
         )
 
-    def _transform_x(self, X: tf.Tensor) -> tf.Tensor:
+    def transform_x(self, X: tf.Tensor) -> tf.Tensor:
         """
         :param X: input to do transformation on
         :return: transformation for continuous features: normalising flow with Gaussian measure or standardization with empirical measure
@@ -496,7 +505,8 @@ class oak_model:
             transformer_x = self.input_flows[i].bijector.inverse
         return transformer_x
 
-    def get_sobol(self, likelihood_variance=False):
+    def get_sobol(self, likelihood_variance=False,
+                  callback:Optional[callable]=None):
         """
         :param likelihood_variance: whether to include likelihood noise in Sobol calculation
         :return: normalised Sobol indices for each additive term in the model
@@ -512,6 +522,7 @@ class oak_model:
             delta,
             mu,
             share_var_across_orders=self.share_var_across_orders,
+            callback=callback
         )
         if likelihood_variance:
             normalised_sobols = sobols / (
@@ -578,9 +589,11 @@ class oak_model:
         selected_dims, _ = get_list_representation(self.m.kernel, num_dims=num_dims)
         tuple_of_indices = selected_dims[1:]
 
-        self.get_sobol(likelihood_variance=likelihood_variance)
+        if not hasattr(self, "normalised_sobols"):
+            self.get_sobol(likelihood_variance=likelihood_variance)
+
         order = np.argsort(self.normalised_sobols)[::-1]
-        fig_list: List[FigureDescription] = []
+        fig_list: List[Optional[FigureDescription]] = []
         if top_n is None:
             top_n = len(order)
         for n in order[: min(top_n, len(order))]:
@@ -694,10 +707,11 @@ class oak_model:
                     )
 
             else:
-                raise NotImplementedError
+                fig_list.append(None)
 
         if save_fig is not None:
             save_fig_list(fig_list=fig_list, dirname=Path(save_fig))
+        return fig_list
 
 
 def _calculate_features(
@@ -743,9 +757,9 @@ def _calculate_features(
                 p.append(None)
                 p0.append(None)
                 continuous_index.append(j)
-    print("indices of binary feature ", binary_index)
-    print("indices of continuous feature ", continuous_index)
-    print("indices of categorical feature ", categorical_index)
+    # print("indices of binary feature ", binary_index)
+    # print("indices of continuous feature ", continuous_index)
+    # print("indices of categorical feature ", categorical_index)
 
     return continuous_index, binary_index, categorical_index, p0, p
 
