@@ -1,7 +1,5 @@
 import streamlit as st
 
-from cacheable_api.file_api import FileAPI
-
 
 class PlotAPI:
     @staticmethod

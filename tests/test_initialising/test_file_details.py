@@ -1,5 +1,3 @@
-import streamlit_mock
-
 from initialising.file_details import load_example, FileFormatError, \
     UploadedDetails
 import pytest
@@ -21,29 +19,6 @@ import pytest
 def test_file_data_errors(file_data):
     with pytest.raises(FileFormatError):
         UploadedDetails.display(file_data=file_data, filename="")
-
-
-# @pytest.mark.parametrize(
-#     "file_data",
-#     ({"key1": [[1, 2], [3, 4]],
-#       "key2": [[1], [11]]
-#       },
-#      {"key1": [[1], [11]],
-#       "key2": [[1, 2], [3, 4]]
-#       }
-#      )
-# )
-# def test_key_order(file_data):
-#     st_mock = streamlit_mock.StreamlitMock()
-#     session_state = st_mock.get_session_state()
-#     session_state["file_details_next_button"] = True
-#     # print(file_data)
-#     act_dict = UploadedDetails.display(file_data=file_data, filename="")
-#     exp_dict = {}
-#     assert act_dict == exp_dict
-
-
-# test_inputs,features,value
 
 
 @pytest.mark.parametrize(

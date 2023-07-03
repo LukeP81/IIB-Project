@@ -12,21 +12,26 @@ class ModelAPI:
 
     @staticmethod
     @st.cache_data
-    def get_test_data(_x_test=None, _y_test=None):
-        """Caches the data from the chosen file"""
+    def get_test_data(_x_test: Optional[Any] = None,
+                      _y_test: Optional[Any] = None):
+        """Caches the data for test values"""
         if _x_test is None or _y_test is None:
             raise NotCachedError
         return _x_test, _y_test
 
     @staticmethod
-    def set_test_data(x_test, y_test):
+    def set_test_data(x_test: Any, y_test: Any):
+        """Sets the data for test values"""
+
         x_test = tf.cast(x_test, tf.float64)
         y_test = tf.cast(y_test, tf.float64)
         _ = ModelAPI.get_test_data(x_test, y_test)
 
     @staticmethod
     @st.cache_resource
-    def get_oak_model(_model=None) -> oak_model:
+    def get_oak_model(_model: Optional[Any] = None) -> oak_model:
+        """Returns the OAK model"""
+
         if _model is None:
             raise NotCachedError
         return _model
@@ -39,7 +44,7 @@ class ModelAPI:
                       normalising_callback: Optional[callable] = None,
                       ):
         """
-        Cacheable function for creating a trained model
+        Function for creating a trained model
         :param normalising_callback:
         :param x_train: the x training data
         :param y_train: the y training data

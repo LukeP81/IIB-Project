@@ -1,7 +1,6 @@
 """Module for setting data and feature names of files"""
 from typing import List, Optional
 
-import mat4py
 import pandas as pd
 import streamlit as st
 

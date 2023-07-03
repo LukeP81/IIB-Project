@@ -1,2 +1,3 @@
 class NotCachedError(Exception):
-    """"""  # todo
+    """Exception raised when attempting to read data that should be cached,
+    but is currently not cached"""
