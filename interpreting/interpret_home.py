@@ -1,4 +1,6 @@
 """Module for interpretation"""
+from typing import Dict, Any
+
 import numpy as np
 import streamlit as st
 from matplotlib import pyplot as plt
@@ -20,7 +22,7 @@ class Interpret:
         """Main display method"""
         oak = ModelAPI.get_oak_model()
         with st.spinner("Computing model details"):
-            computed_data = ComputationAPI.get_data(oak)
+            computed_data: Dict[str, Any] = ComputationAPI.get_data(oak)
 
         cumulative_sobol = computed_data["cumulative_sobol"]
         nll = computed_data["nll"]
