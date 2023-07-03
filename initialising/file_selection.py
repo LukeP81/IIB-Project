@@ -10,11 +10,6 @@ class FileSelector:
     """Namespace for file methods"""
 
     @classmethod
-    def load_model(cls):
-        pass
-        # todo: probably place in extra tab
-
-    @classmethod
     def display(cls) -> Optional[Any]:
         """Method for displaying UI for file selection
         :return: None, str, or UploadedFile. The UploadedFile class caused testing

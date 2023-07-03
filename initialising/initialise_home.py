@@ -53,8 +53,7 @@ class Initialise:  # pylint: disable = too-few-public-methods
                     details_dict = UploadedDetails.display(file_data=file_data,
                                                            filename=file.name)
             except FileFormatError:
-                st.write("message")
-                # todo: come up with suitable message and example
+                st.error("This file format is incorrect")
                 return
 
         if details_dict is not None:

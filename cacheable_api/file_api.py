@@ -7,6 +7,7 @@ from cacheable_api.api_exceptions import NotCachedError
 
 
 class FileAPI:
+    """API for file methods"""
 
     @staticmethod
     @st.cache_data

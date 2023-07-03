@@ -12,7 +12,8 @@ from oak.model_utils import oak_model
 from oak.utils import get_model_sufficient_statistics, get_prediction_component
 
 
-class ComputationAPI:  # pylint disable=too-few-public-methods
+# pylint disable=too-few-public-methods
+class ComputationAPI:
     """Class acting as a namespace for compute heavy methods"""
 
     @staticmethod
@@ -33,9 +34,9 @@ class ComputationAPI:  # pylint disable=too-few-public-methods
             residuals = y_pred - y_true
             rss = tf.reduce_mean(tf.square(residuals))
             tss = tf.reduce_mean(tf.square(y_true - tf.reduce_mean(y_true)))
-            r2 = 1 - rss / tss
+            r_squared = 1 - rss / tss
             rmse = tf.sqrt(rss)
-        return r2, rmse
+        return r_squared, rmse
 
     @staticmethod
     def _get_sobol_info(oak: oak_model):
@@ -56,7 +57,7 @@ class ComputationAPI:  # pylint disable=too-few-public-methods
             normalised_sobols = oak.normalised_sobols
         return normalised_sobols, tuple_of_indices
 
-    # pylint:disable=too-many-arguments, too-many-local-variables
+    # pylint:disable=too-many-arguments, too-many-locals
     @staticmethod
     def _get_component_info(clipped_tensor: Tensor,
                             normalised_sobols: List[float],

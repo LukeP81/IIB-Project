@@ -9,6 +9,7 @@ from oak.model_utils import oak_model
 
 
 class ModelAPI:
+    """API for interacting with OAK module"""
 
     @staticmethod
     @st.cache_data
