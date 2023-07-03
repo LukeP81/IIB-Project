@@ -26,7 +26,6 @@ class Interpret:
         rmse = computed_data["rmse"]
         rmse_component = computed_data["rmse_component"]
         tuple_of_indices = computed_data["tuple_of_indices"]
-        num_components = len(tuple_of_indices)
 
         st.title("Model Summary")
         metric_col, orders_col, components_col = st.columns([2, 5, 5])

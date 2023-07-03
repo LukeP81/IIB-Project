@@ -82,7 +82,6 @@ class ComputationAPI:
             y_pred_component_transformed = None
 
             for i, n in enumerate(order):
-                # add predictions of the terms one by one ranked by their Sobol index
                 y_pred_component += prediction_list[n].numpy()
                 y_pred_component_transformed = oak.scaler_y.inverse_transform(
                     y_pred_component.reshape(-1, 1)

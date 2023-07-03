@@ -2,7 +2,6 @@ import numpy as np
 import streamlit as st
 
 from cacheable_api.file_api import FileAPI
-from other.utilities import AppStates
 
 
 class ModelSetup:
