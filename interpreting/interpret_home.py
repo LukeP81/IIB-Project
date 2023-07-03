@@ -1,3 +1,4 @@
+"""Module for interpretation"""
 import numpy as np
 import streamlit as st
 from matplotlib import pyplot as plt
@@ -12,8 +13,11 @@ import plotly.graph_objects as go
 
 
 class Interpret:
+    """Class holding methods for displaying interpretations"""
+
     @staticmethod
     def display():
+        """Main display method"""
         oak = ModelAPI.get_oak_model()
         with st.spinner("Computing model details"):
             computed_data = ComputationAPI.get_data(oak)
@@ -55,6 +59,7 @@ class Interpret:
 
     @staticmethod
     def plot_components(fig_list):
+        """Plots component graphs"""
         left_col, middle_col, right_col = st.columns(3)
         col_dict = {0: left_col,
                     1: middle_col,
@@ -64,7 +69,7 @@ class Interpret:
                 left_col, middle_col, right_col = st.columns(3)
                 col_dict = {0: left_col,
                             1: middle_col,
-                            2: right_col}  # todo name
+                            2: right_col}
             with col_dict[i % 3]:
                 if fig is None:
                     st.write("Component of higher order than 2")
@@ -73,6 +78,7 @@ class Interpret:
 
     @staticmethod
     def plot_rmse_sobol(cumulative_sobol, order, rmse_component):
+        """Plots RMSE vs Sobol graph"""
         x_vals = np.arange(len(order))
         x_vals += 1
         plt.figure(figsize=(8, 4))
@@ -88,12 +94,12 @@ class Interpret:
         fig = make_subplots(specs=[[{"secondary_y": True}]])
         fig.add_trace(go.Scatter(x=x_vals, y=rmse_component,
                                  mode='lines',
-                                 line=dict(color='red', width=4),
+                                 line={"color": "red", "width": 4},
                                  name='RMSE'), secondary_y=False)
         fig.add_trace(go.Scatter(x=x_vals, y=cumulative_sobol,
                                  mode='lines',
-                                 line=dict(color='green', width=4,
-                                           dash='dash'),
+                                 line={"color": 'green', "width": 4,
+                                       "dash": 'dash'},
                                  name='Cumulative Sobol'), secondary_y=True)
         fig.update_layout(
             title='RMSE and Cumulative Sobol',
@@ -117,6 +123,7 @@ class Interpret:
 
     @staticmethod
     def plot_order_sobol(normalised_sobols, tuple_of_indices):
+        """Plots Sobol order histogram"""
         # aggregate sobol per order of interactions
         sobol_order = np.zeros(len(tuple_of_indices[-1]))
         for i in range(len(tuple_of_indices)):
@@ -139,7 +146,7 @@ class Interpret:
 
     @staticmethod
     def fig_listing(amount, covariate_names, oak):
-
+        """Gets the figure list"""
         fig_list = PlotAPI.get_component_figures(
             amount=amount,
             _covariate_names=covariate_names,
@@ -148,6 +155,7 @@ class Interpret:
 
     @staticmethod
     def show_performance_metrics(nll, r2, rmse):
+        """Shows performance metrics"""
         st.subheader("Performance")
         col1, col2 = st.columns(2)
         with col1:
@@ -161,6 +169,7 @@ class Interpret:
 
     @staticmethod
     def show_dataset_metrics():
+        """Shows dataset metrics"""
         x_data, y_data = FileAPI.get_file_data()
         x_test, y_test = ModelAPI.get_test_data()
         data_shape = np.shape(x_data)

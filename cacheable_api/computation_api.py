@@ -17,7 +17,7 @@ class ComputationAPI:
     """Class acting as a namespace for compute heavy methods"""
 
     @staticmethod
-    def get_data(oak: oak_model):
+    def get_data(oak: oak_model) -> dict:
         """Public method for accessing the data"""
         try:
             compute_data = ComputationAPI._get_computation_data()
