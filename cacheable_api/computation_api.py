@@ -12,7 +12,7 @@ from oak.model_utils import oak_model
 from oak.utils import get_model_sufficient_statistics, get_prediction_component
 
 
-class ComputationAPI:
+class ComputationAPI:  # pylint disable=too-few-public-methods
     """Class acting as a namespace for compute heavy methods"""
 
     @staticmethod
@@ -56,6 +56,7 @@ class ComputationAPI:
             normalised_sobols = oak.normalised_sobols
         return normalised_sobols, tuple_of_indices
 
+    # pylint:disable=too-many-arguments, too-many-local-variables
     @staticmethod
     def _get_component_info(clipped_tensor: Tensor,
                             normalised_sobols: List[float],
@@ -81,8 +82,8 @@ class ComputationAPI:
             rmse_component = []
             y_pred_component_transformed = None
 
-            for i, n in enumerate(order):
-                y_pred_component += prediction_list[n].numpy()
+            for num in order:
+                y_pred_component += prediction_list[num].numpy()
                 y_pred_component_transformed = oak.scaler_y.inverse_transform(
                     y_pred_component.reshape(-1, 1)
                 )
@@ -90,7 +91,7 @@ class ComputationAPI:
                     tf.reduce_mean((y_pred_component_transformed - y_test) ** 2)
                 )
                 rmse_component.append(error_component)
-                cumulative_sobol.append(normalised_sobols[n])
+                cumulative_sobol.append(normalised_sobols[num])
             cumulative_sobol = np.cumsum(cumulative_sobol)
             np.testing.assert_allclose(y_pred_component_transformed[:, 0], y_pred)
         return cumulative_sobol, rmse_component
@@ -107,7 +108,8 @@ class ComputationAPI:
 
         y_pred = oak.predict(clipped_tensor)
 
-        r2, rmse = ComputationAPI._get_performance_metrics(y_pred, y_test[:, 0])
+        r_squared, rmse = ComputationAPI._get_performance_metrics(y_pred,
+                                                                  y_test[:, 0])
 
         normalised_sobols, tuple_of_indices = ComputationAPI._get_sobol_info(oak)
 
@@ -124,7 +126,7 @@ class ComputationAPI:
                                "nll": nll,
                                "normalised_sobols": normalised_sobols,
                                "order": order,
-                               "r2": r2,
+                               "r2": r_squared,
                                "rmse": rmse,
                                "rmse_component": rmse_component,
                                "tuple_of_indices": tuple_of_indices})
