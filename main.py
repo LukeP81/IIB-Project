@@ -14,8 +14,6 @@ def page_setup():
     st.set_page_config(page_title="OAK GP Interpretation",
                        page_icon="🌳",
                        layout="wide")
-    # st.title("OAK GP Interpretation")
-    # todo sidebar
 
 
 def run() -> None:

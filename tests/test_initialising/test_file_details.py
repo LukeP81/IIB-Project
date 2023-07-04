@@ -1,6 +1,9 @@
+"""Test file details"""
+
+import pytest
+
 from initialising.file_details import load_example, FileFormatError, \
     UploadedDetails
-import pytest
 
 
 @pytest.mark.parametrize(
@@ -17,6 +20,7 @@ import pytest
      )
 )
 def test_file_data_errors(file_data):
+    """Checks that file errors are flagged"""
     with pytest.raises(FileFormatError):
         UploadedDetails.display(file_data=file_data, filename="")
 
@@ -48,4 +52,5 @@ def test_file_data_errors(file_data):
     ]
 )
 def test_load_example_concrete(filename, file_data, expected_output):
+    """Checks example files work as expected"""
     assert load_example(file_data, filename) == expected_output

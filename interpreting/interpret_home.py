@@ -16,6 +16,7 @@ from cacheable_api.plot_api import PlotAPI
 class Interpret:
     """Class holding methods for displaying interpretations"""
 
+    # pylint: disable = unsubscriptable-object
     @staticmethod
     def display():
         """Main display method"""
@@ -157,7 +158,7 @@ class Interpret:
         return fig_list
 
     @staticmethod
-    def show_performance_metrics(nll, r2, rmse):
+    def show_performance_metrics(nll, r_squared, rmse):
         """Shows performance metrics"""
         st.subheader("Performance")
         col1, col2 = st.columns(2)
@@ -165,7 +166,7 @@ class Interpret:
             st.metric(label="Test RMSE",
                       value=np.round(rmse, 4))
             st.metric(label="Test R\u00b2",
-                      value=np.round(r2, 4))
+                      value=np.round(r_squared, 4))
         with col2:
             st.metric(label="Test NLL",
                       value=np.round(nll, 4))
@@ -173,8 +174,8 @@ class Interpret:
     @staticmethod
     def show_dataset_metrics():
         """Shows dataset metrics"""
-        x_data, y_data = FileAPI.get_file_data()
-        x_test, y_test = ModelAPI.get_test_data()
+        x_data, _ = FileAPI.get_file_data()
+        x_test, _ = ModelAPI.get_test_data()
         data_shape = np.shape(x_data)
         test_shape = np.shape(x_test)
         st.markdown("### Dataset")

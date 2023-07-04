@@ -1,3 +1,4 @@
+"""Module for optimising the model"""
 import numpy as np
 import pandas as pd
 import streamlit as st
@@ -9,8 +10,11 @@ from interpreting.interpret_home import Interpret
 
 
 class Optimize:
+    """Class containing methods for optimising the model"""
+
     @staticmethod
     def display():
+        """Main display method for optimisation"""
         top_of_page = st.empty()
         options_frame = st.empty()
         progress_frame = st.empty()
@@ -33,8 +37,8 @@ class Optimize:
 
             with chart_frame.container():
                 st.subheader("Realtime hyperparameter values")
-                df = pd.DataFrame()
-                chart = st.line_chart(df)
+                dataframe = pd.DataFrame()
+                chart = st.line_chart(dataframe)
 
             def printing(*args):
                 chart.add_rows(

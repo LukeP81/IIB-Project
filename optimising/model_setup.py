@@ -1,3 +1,5 @@
+"""Module for setting up the model"""
+
 import numpy as np
 import streamlit as st
 
@@ -5,8 +7,12 @@ from cacheable_api.file_api import FileAPI
 
 
 class ModelSetup:
+    """Class containing methods for setting up the model"""
+
     @staticmethod
     def optimise_display():
+        """Main display method for model setup"""
+
         st.title("Model Setup")
 
         x_data, y_data = FileAPI.get_file_data()
@@ -48,6 +54,7 @@ class ModelSetup:
 
     @staticmethod
     def splitting(num_points, x_data, y_data):
+        """Creates test/train split"""
         data_split = st.slider(label="Train/test split", min_value=50.0,
                                max_value=95.0, value=80.0, step=0.1,
                                format="%.1f%%")
@@ -65,6 +72,7 @@ class ModelSetup:
 
     @staticmethod
     def options(num_dims, num_points):
+        """Shows model options"""
         with st.expander(label="Model options", expanded=True):
             max_interaction_depth = st.number_input(
                 label="Maximum interaction depth",
@@ -109,6 +117,7 @@ class ModelSetup:
 
     @staticmethod
     def shuffling(num_points, x_data, y_data):
+        """Randomizes data"""
         shuffle_data = st.checkbox(
             label="Shuffle data", value=True,
             key="data_options_shuffle_data",
