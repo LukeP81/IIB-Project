@@ -28,8 +28,8 @@ def test_startup():
 @patch('streamlit.session_state', new={})
 @pytest.mark.parametrize(
     "func, state", [('Initialise.display', AppStates.INITIALISING),
-                    ('optimising_func', AppStates.OPTIMISING),
-                    ('interpreting_func', AppStates.INTERPRETING)]
+                    ('Optimize.display', AppStates.OPTIMISING),
+                    ('Interpret.display', AppStates.INTERPRETING)]
 )
 def test_main(func, state):
     """Test that the expected state function is executed"""
