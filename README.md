@@ -7,3 +7,4 @@ The backend of this software is a partially altered version of the code
 at https://github.com/amzn/orthogonal-additive-gaussian-processes.
 Supported file types are .mat. The file format is required to match the example cases, with a NxD array for the input
 features and a Nx1 array for the output values.
+The code is written to an academic standard rather than a professional software standard.
