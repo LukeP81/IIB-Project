@@ -35,8 +35,8 @@ def test_no_return_when_uploaded(files):
     "key,selected,expected",
     [("upload", None, file1),
      ("upload", file2.name, file2),
-     ("example", None, "cw1a"),
-     ("example", "pima", "pima")]
+     ("example", None, "cw1e"),
+     ("example", "concrete", "concrete")]
 )
 def test_returned_upload(key, selected, expected):
     """Test that the expected file is returned"""
