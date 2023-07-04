@@ -4,14 +4,13 @@ from typing import Dict, Any
 import numpy as np
 import streamlit as st
 from matplotlib import pyplot as plt
+import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
+from cacheable_api.computation_api import ComputationAPI
 from cacheable_api.file_api import FileAPI
 from cacheable_api.oak_api import ModelAPI
-from cacheable_api.computation_api import ComputationAPI
-
 from cacheable_api.plot_api import PlotAPI
-import plotly.graph_objects as go
 
 
 class Interpret:
@@ -24,21 +23,21 @@ class Interpret:
         with st.spinner("Computing model details"):
             computed_data: Dict[str, Any] = ComputationAPI.get_data(oak)
 
-        cumulative_sobol = computed_data["cumulative_sobol"]
-        nll = computed_data["nll"]
-        normalised_sobols = computed_data["normalised_sobols"]
-        order = computed_data["order"]
-        r2 = computed_data["r2"]
-        rmse = computed_data["rmse"]
-        rmse_component = computed_data["rmse_component"]
-        tuple_of_indices = computed_data["tuple_of_indices"]
+            cumulative_sobol = computed_data["cumulative_sobol"]
+            nll = computed_data["nll"]
+            normalised_sobols = computed_data["normalised_sobols"]
+            order = computed_data["order"]
+            r_squared = computed_data["r2"]
+            rmse = computed_data["rmse"]
+            rmse_component = computed_data["rmse_component"]
+            tuple_of_indices = computed_data["tuple_of_indices"]
 
         st.title("Model Summary")
         metric_col, orders_col, components_col = st.columns([2, 5, 5])
         with metric_col:
             st.header("Metrics")
             Interpret.show_dataset_metrics()
-            Interpret.show_performance_metrics(nll, r2, rmse)
+            Interpret.show_performance_metrics(nll, r_squared, rmse)
 
         with orders_col:
             st.header("Order Contributions")
@@ -106,21 +105,22 @@ class Interpret:
         fig.update_layout(
             title='RMSE and Cumulative Sobol',
             xaxis_title='Number of Terms Added',
-            yaxis=dict(
-                title='RMSE',
-                titlefont=dict(color='red'),
-                tickfont=dict(color='red'), showgrid=False
-                # Remove horizontal gridlines
-            ),
-            yaxis2=dict(
-                title='Cumulative Sobol',
-                titlefont=dict(color='green'),
-                tickfont=dict(color='green'),
-                side='right', showgrid=False  # Remove horizontal gridlines
-            ),
-            showlegend=True,
-
+            yaxis={
+                'title': 'RMSE',
+                'titlefont': {'color': 'red'},
+                'tickfont': {'color': 'red'},
+                'showgrid': False
+            },
+            yaxis2={
+                'title': 'Cumulative Sobol',
+                'titlefont': {'color': 'green'},
+                'tickfont': {'color': 'green'},
+                'side': 'right',
+                'showgrid': False
+            },
+            showlegend=True
         )
+
         st.plotly_chart(fig)
 
     @staticmethod
@@ -128,8 +128,8 @@ class Interpret:
         """Plots Sobol order histogram"""
         # aggregate sobol per order of interactions
         sobol_order = np.zeros(len(tuple_of_indices[-1]))
-        for i in range(len(tuple_of_indices)):
-            sobol_order[len(tuple_of_indices[i]) - 1] += normalised_sobols[i]
+        for i, indices in enumerate(tuple_of_indices):
+            sobol_order[len(indices) - 1] += normalised_sobols[i]
         fig = go.Figure()
         fig.add_trace(
             go.Bar(x=np.arange(1, len(sobol_order) + 1), y=sobol_order))
@@ -137,13 +137,14 @@ class Interpret:
             title_text='Sum of Sobol Indices of Orders',
             xaxis_title='Order',
             yaxis_title='Sobol Indices',
-            xaxis=dict(
-                tickmode='linear',
-                dtick=1
-            ),
+            xaxis={
+                'tickmode': 'linear',
+                'dtick': 1
+            },
             bargap=0.2,
             bargroupgap=0.1
         )
+
         st.plotly_chart(fig)
 
     @staticmethod
